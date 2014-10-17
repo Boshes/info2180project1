@@ -1,0 +1,41 @@
+body {
+    background-color:#F0FFFF
+}
+table,th, td {
+        border:1px solid black;
+        border-collapse:collapse;
+     }
+th,td {
+         padding:10px;
+        }
+
+.cash{
+    float:left;
+    position:relative;
+}
+.cashwords{
+    float:left;
+}
+.itemwords {
+    float:left;
+}
+
+.cashtable {
+    float:right;
+    margin-left:500px;
+}
+.staffwords {
+    float:right;
+}
+
+.address{
+    float:left;
+    width:100%;
+}
+.addresswords {
+    float:left;
+}
+.addresstable {
+    float:right;
+    margin-left:500px;
+}
