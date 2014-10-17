@@ -1,137 +1,98 @@
-var contacts = [];
-
-function Person(firstName, lastName, phoneNumber, email) {
-    "use strict";
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.phoneNumber = phoneNumber;
-    this.email = email;
-}
-
-window.onload = function () {
-    "use strict";
-    $("addperson").onclick = add;
-    $("search").onclick = search;
-    $("scanitem").onclick = scan;
-    $("deleteitem").onclick = voidLastTransaction;
-    $("discount").onclick = member;
-    var i;
-    for (i = 0; i < contacts.length; i++) {
-        new TablePerson(contacts[i], i + 1);
-    }
+var bob = {
+    firstName: "Bob",
+    lastName: "Jones",
+    phoneNumber: "(650) 777-7777",
+    email: "bob.jones@example.com"
 };
 
-function search() {
-    "use strict";
-    var i;
-    var search = $("search_box").value;
-    for (i = 0; i < contacts.length; i++) {
-        if (contacts[i].lastName === search) {
-            $("output").textContent = "Person found: " + Object.values(contacts[i]);
-        }
-        else {
-            $("output").textContent = "Person not found";
-        }
-    }
+var mary = {
+    firstName: "Mary",
+    lastName: "Johnson",
+    phoneNumber: "(650) 888-8888",
+    email: "mary.johnson@example.com"
 };
 
-function add() {
-    "use strict";
-    var firstName = $("firstname_box").value;
-    var lastName = $("lastname_box").value;
-    var phoneNumber = $("phonenumber_box").value;
-    var email = $("email_box").value;
-    var newPerson = new Person(firstName, lastName, phoneNumber, email);
-    contacts.push(newPerson);
-    list();
-    TablePerson(newPerson, contacts.length);
-    $("firstname_box").value = "";
-    $("lastname_box").value = "";
-    $("phonenumber_box").value = "";
-    $("email_box").value = "";
-};
+var contacts = [bob, mary];
 
-function TablePerson(element, pos) {
-    "use strict";
-    var table = document.getElementById("person_table");
-    var row = table.insertRow(pos);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    var cell4 = row.insertCell(3);
-    cell1.innerHTML = element.firstName;
-    cell2.innerHTML = element.lastName;
-    cell3.innerHTML = element.phoneNumber;
-    cell4.innerHTML = element.email;
+function printPerson(person) {
+    console.log(person.firstName + " " + person.lastName);
 }
 
 function list() {
-    "use strict";
-    var i;
-    for (i = 0; i <contacts.length; i++) {
-        $("output").textContent = "New Person added: " + Object.values(contacts[i]);
+	var contactsLength = contacts.length;
+	for (var i = 0; i < contactsLength; i++) {
+		printPerson(contacts[i]);
+	}
+}
+
+/*Create a search function
+then call it passing "Jones"*/
+var search = function(lastName) {
+    contactsLength = contacts.length;
+    for (var i = 0;i<contactsLength;i++) {
+        if (contacts[i].lastName === lastName) {
+            printPerson(contacts[i]);
+        }
     }
 }
 
-var total = 0;
-var lastTransactionAmount = 0;
+search("Jones");
 
-function StaffMember(name, discountPercent) {
-    "use strict";
+function add(firstName, lastName, email, phoneNumber) {
+    contacts[contacts.length] = {
+    firstName: firstName,
+    lastName: lastName,
+    email :email,
+    phoneNumber : phoneNumber
+    };
+}
+add ("Justen","Morgan","justenamorgan@gmail.com",454-2078);
+list();
+
+
+function StaffMember(name,discountPercent){
     this.name = name;
     this.discountPercent = discountPercent;
 }
 
-function member() {
-    "use strict";
-    var name = $("staffname").value;
-    var discountPercent = $("staffdiscount").value;
-    var member = new StaffMember(name, discountPercent);
-    applyStaffDiscount(member);
-}
-    
-function scan() {
-    "use strict";
-    var itemName = $("itemname_box").value;
-    var quantity = $("quantity_box").value;
-    $("outcash").textContent = "The total is: " + total.toFixed(2);
-    switch (itemName) {
-    case "egg":
-        total += (0.98 * quantity);
-        lastTransactionAmount = (0.98 * quantity);
-        $("outcash").textContent = "The new total is: " + total.toFixed(2);
-            break;
-    case "milk":
-        total += (1.23 * quantity);
-        lastTransactionAmount = (1.23 * quantity);
-        $("outcash").textContent = "The new total is: " + total.toFixed(2);
-        break;
-    case "magazine":
-        total += (4.99 * quantity);
-        lastTransactionAmount = (4.99 * quantity);
-        $("outcash").textContent = "The new total is: " + total.toFixed(2);
-        break;
-    case "chocolate":
-        total += (0.45 * quantity);
-        lastTransactionAmount = (0.45 * quantity);
-        $("outcash").textContent = "The new total is: " + total.toFixed(2);
-        break;
-    default:
-        $("outcash").textContent = "This item is not in the list.";
+var sally = new StaffMember("Sally",5);
+var bob = new StaffMember("Bob",10);
+
+// Create yourself again as 'me' with a staff discount of 20%
+var me = new StaffMember("Justen",20);
+
+var cashRegister = {
+    total:0,
+    lastTransactionAmount: 0,
+    add: function(itemCost){
+        this.total += (itemCost || 0);
+        this.lastTransactionAmount = itemCost;
+    },
+    scan: function(item,quantity){
+        switch (item){
+        case "eggs": this.add(0.98 * quantity); break;
+        case "milk": this.add(1.23 * quantity); break;
+        case "magazine": this.add(4.99 * quantity); break;
+        case "chocolate": this.add(0.45 * quantity); break;
+        }
+        return true;
+    },
+    voidLastTransaction : function(){
+        this.total -= this.lastTransactionAmount;
+        this.lastTransactionAmount = 0;
+    },
+    // Create a new method applyStaffDiscount here
+    applyStaffDiscount:function(employee){
+        this.total -=this.total*(employee.discountPercent/100);
     }
-}
+};
 
-function voidLastTransaction() {
-    "use strict";
-    total -= lastTransactionAmount;
-    lastTransactionAmount = 0;
-    $("outcash").textContent = "The new total is: " + total.toFixed(2);
-}
-    
-function applyStaffDiscount(member) {
-    "use strict";
-    total -= total * (member.discountPercent / 100);
-    $("outcash").textContent = "The new discounted total is: " + total.toFixed(2);
-}
+cashRegister.scan('eggs',1);
+cashRegister.scan('milk',1);
+cashRegister.scan('magazine',3);
+// Apply your staff discount by passing the 'me' object 
+// to applyStaffDiscount
+cashRegister.applyStaffDiscount(me);
 
-
+// Show the total bill
+console.log('Your bill is '+cashRegister.total.toFixed(2));
